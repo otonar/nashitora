@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>観光ルート案内</title>
+    <!-- API key: AIzaSyCcQJsY1k_zYIToX-5yuE8w_A7m6PxNQV0 -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcQJsY1k_zYIToX-5yuE8w_A7m6PxNQV0&libraries=places"></script>
+    <style>
+      #map {
+        height: 600px;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .controls {
+        margin-bottom: 20px;
+      }
+      .info-panel {
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+      }
+      .info-item {
+        margin: 5px 0;
+      }
+      .travel-plans {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>観光スポット ルート案内</h1>
+
+      <div class="controls">
+        <label for="mode">移動手段: </label>
+        <select id="mode" onchange="calculateAndDisplayRoute()">
+          <option value="DRIVING">🚗 車</option>
+          <option value="WALKING">🚶 徒歩</option>
+        </select>
+      </div>
+
+      <div id="map"></div>
+
+      <div class="info-panel">
+        <div id="total-distance" class="info-item">📍 総距離: 計算中...</div>
+        <div id="total-duration" class="info-item">
+          ⏱ 予想所要時間: 計算中...
+        </div>
+      </div>
+
+      <div class="travel-plans">
+        <h2>おすすめ旅行プラン</h2>
+        <div id="travel-plans-content">
+          <pre>
+### 1. 日帰りプラン
+
+- 8:00 - 出発
+- 10:00 - 富士芝桜まつり会場
+- 12:00 - 昇仙峡でランチ（昇仙峡内のレストランで吊り橋を眺めながら食事）
+- 14:00 - 本栖湖
+- 16:00 - 武田神社
+- 18:00 - 帰路につく
+
+### 食事場所の提案
+- 昇仙峡内のレストラン
+- 本栖湖周辺のカフェやレストラン
+- 武田神社周辺の飲食店
+
+### 観光順序
+1. 富士芝桜まつり会場
+2. 昇仙峡
+3. 本栖湖
+4. 武田神社
+
+---
+
+### 2. 1泊2日プラン
+
+#### Day 1
+- 9:00 - 出発
+- 11:00 - 富士芝桜まつり会場
+- 13:00 - 昼食（富士五湖周辺のレストラン）
+- 15:00 - ホテルチェックイン（本栖湖周辺のホテル）
+- 17:00 - 本栖湖散策
+- 19:00 - 夕食（本栖湖周辺のレストラン）
+
+#### Day 2
+- 8:00 - ホテルチェックアウト
+- 9:00 - 昇仙峡
+- 12:00 - 昼食（昇仙峡内のレストラン）
+- 14:00 - 武田神社
+- 16:00 - 帰路につく
+
+### 宿泊場所
+- 1泊目: 本栖湖周辺のホテル
+
+### 観光順序
+1. 富士芝桜まつり会場
+2. 本栖湖
+3. 昇仙峡
+4. 武田神社
+
+---
+
+### 3. 2泊3日プラン
+
+#### Day 1
+- 9:00 - 出発
+- 11:00 - 富士芝桜まつり会場
+- 13:00 - 昼食（富士五湖周辺のレストラン）
+- 15:00 - ホテルチェックイン（本栖湖周辺のホテル）
+- 17:00 - 本栖湖散策
+- 19:00 - 夕食（本栖湖周辺のレストラン）
+
+#### Day 2
+- 8:00 - ホテルチェックアウト
+- 9:00 - 昇仙峡
+- 12:00 - 昼食（昇仙峡内のレストラン）
+- 14:00 - 時間自由（本栖湖散策やレジャー活動）
+- 19:00 - 夕食（本栖湖周辺のレストラン）
+
+#### Day 3
+- 9:00 - チェックアウト
+- 10:00 - 武田神社
+- 12:00 - 昼食（甲府市内の飲食店で地元グルメを堪能）
+- 14:00 - 帰路につく
+
+### 宿泊場所
+- 1泊目: 本栖湖周辺のホテル
+- 2泊目: 本栖湖周辺のホテル
+
+### 観光順序
+1. 富士芝桜まつり会場
+2. 本栖湖
+3. 昇仙峡
+4. 武田神社</pre
+          >
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let map;
+      let currentDirectionsRenderer;
+      let directionsService;
+
+      function initMap() {
+        directionsService = new google.maps.DirectionsService();
+        map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 12,
+          center: { lat: 35.4423834, lng: 138.601609 },
+        });
+
+        calculateAndDisplayRoute();
+
+        const marker0 = new google.maps.Marker({
+          position: { lat: 35.4423834, lng: 138.601609 },
+          map: map,
+          title: "富士芝桜まつり会場",
+          label: { text: "1", color: "white" },
+          animation: google.maps.Animation.DROP,
+        });
+        const infoWindow0 = new google.maps.InfoWindow({
+          content:
+            '<div style="padding: 10px;"><strong>富士芝桜まつり会場</strong></div>',
+        });
+        marker0.addListener("click", () => {
+          infoWindow0.open(map, marker0);
+        });
+
+        const marker1 = new google.maps.Marker({
+          position: { lat: 35.7452778, lng: 138.5675968 },
+          map: map,
+          title: "昇仙峡",
+          label: { text: "2", color: "white" },
+          animation: google.maps.Animation.DROP,
+        });
+        const infoWindow1 = new google.maps.InfoWindow({
+          content: '<div style="padding: 10px;"><strong>昇仙峡</strong></div>',
+        });
+        marker1.addListener("click", () => {
+          infoWindow1.open(map, marker1);
+        });
+
+        const marker2 = new google.maps.Marker({
+          position: { lat: 35.4643359, lng: 138.5870607 },
+          map: map,
+          title: "本栖湖",
+          label: { text: "3", color: "white" },
+          animation: google.maps.Animation.DROP,
+        });
+        const infoWindow2 = new google.maps.InfoWindow({
+          content: '<div style="padding: 10px;"><strong>本栖湖</strong></div>',
+        });
+        marker2.addListener("click", () => {
+          infoWindow2.open(map, marker2);
+        });
+
+        const marker3 = new google.maps.Marker({
+          position: { lat: 35.6867759, lng: 138.5772053 },
+          map: map,
+          title: "武田神社",
+          label: { text: "4", color: "white" },
+          animation: google.maps.Animation.DROP,
+        });
+        const infoWindow3 = new google.maps.InfoWindow({
+          content:
+            '<div style="padding: 10px;"><strong>武田神社</strong></div>',
+        });
+        marker3.addListener("click", () => {
+          infoWindow3.open(map, marker3);
+        });
+      }
+
+      function calculateAndDisplayRoute() {
+        if (currentDirectionsRenderer) {
+          currentDirectionsRenderer.setMap(null);
+        }
+
+        currentDirectionsRenderer = new google.maps.DirectionsRenderer({
+          map: map,
+          suppressMarkers: true,
+        });
+
+        const selectedMode = document.getElementById("mode").value;
+
+        const request = {
+          origin: { lat: 35.4423834, lng: 138.601609 },
+          destination: { lat: 35.6867759, lng: 138.5772053 },
+          waypoints: [
+            { location: { lat: 35.7452778, lng: 138.5675968 }, stopover: true },
+            { location: { lat: 35.4643359, lng: 138.5870607 }, stopover: true },
+          ],
+          optimizeWaypoints: true,
+          travelMode: google.maps.TravelMode[selectedMode],
+        };
+
+        directionsService.route(request, (response, status) => {
+          if (status === "OK") {
+            currentDirectionsRenderer.setDirections(response);
+
+            let totalDistance = 0;
+            let totalDuration = 0;
+
+            response.routes[0].legs.forEach((leg) => {
+              totalDistance += leg.distance.value;
+              totalDuration += leg.duration.value;
+            });
+
+            const distanceKm = (totalDistance / 1000).toFixed(1);
+            const hours = Math.floor(totalDuration / 3600);
+            const minutes = Math.floor((totalDuration % 3600) / 60);
+
+            document.getElementById(
+              "total-distance"
+            ).textContent = `📍 総距離: ${distanceKm} km`;
+            document.getElementById(
+              "total-duration"
+            ).textContent = `⏱ 予想所要時間: ${hours}時間${minutes}分`;
+          } else {
+            window.alert("ルートの取得に失敗しました: " + status);
+          }
+        });
+      }
+
+      window.onload = initMap;
+    </script>
+  </body>
+</html>

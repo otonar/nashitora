@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>旅行ルート</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 必要に応じてスタイルを追加 */
+      body {
+        font-family: "Roboto", Arial, sans-serif;
+        background: #f5f7fa;
+        color: #333;
+        padding: 20px;
+      }
+      .route-spot {
+        background: #fff;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .route-spot h2 {
+        color: #283e51;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>選択された旅行ルート</h1>
+    {% if route_spots %} {% for spot in route_spots %}
+    <div class="route-spot">
+      <h2>#{{ spot.spot }}</h2>
+      <p><strong>カテゴリ:</strong> {{ spot.category }}</p>
+      <p><strong>住所:</strong> {{ spot.address }}</p>
+      <p><strong>緯度:</strong> {{ spot.latitude }}</p>
+      <p><strong>経度:</strong> {{ spot.longitude }}</p>
+    </div>
+    {% endfor %} {% else %}
+    <p>選択されたルートがありません。</p>
+    {% endif %}
+  </body>
+</html>

@@ -1,0 +1,235 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Instagram投稿の選択</title>
+    <!-- Google Fonts等を利用するとさらにモダンに見えます -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 全体の初期設定 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Roboto", Arial, sans-serif; /* 例: Google Fonts利用 */
+        background: #f5f7fa; /* やや薄いグレーでモダン感を演出 */
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* ヘッダー */
+      header {
+        width: 100%;
+        text-align: center;
+        padding: 20px 10px;
+        background: linear-gradient(
+          135deg,
+          #4b79a1,
+          #283e51
+        ); /* グラデーション */
+        color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      }
+      header h1 {
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+
+      /* ナビゲーションバー */
+      nav {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        background-color: #fff; /* 白にして境界をはっきり */
+        padding: 15px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      }
+      nav a {
+        text-decoration: none;
+        color: #283e51; /* ヘッダーと連動 */
+        font-weight: 600;
+        transition: color 0.3s ease;
+      }
+      nav a:hover {
+        color: #4b79a1; /* ホバー時に少し変化 */
+      }
+
+      /* メインコンテンツ */
+      main {
+        width: 100%;
+        max-width: 800px;
+        margin: 40px auto 20px auto;
+        padding: 30px;
+        background-color: #fff;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+        border-radius: 10px;
+      }
+
+      /* Instagramの投稿を表示する部分 */
+      .instagram-selection {
+        margin-top: 20px;
+        border-top: 1px solid #ddd;
+        padding-top: 30px;
+      }
+      .instagram-selection h1 {
+        font-size: 1.3em;
+        color: #283e51;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .instagram-selection .hashtag {
+        font-size: 1.1em;
+        color: #4b79a1;
+        margin: 20px 0 10px;
+        font-weight: 600;
+      }
+
+      .hashtag-posts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+      .post {
+        display: inline-block;
+        width: 120px;
+        padding: 10px;
+        background-color: #fafafa;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        text-align: center;
+        transition: box-shadow 0.3s ease;
+      }
+      .post:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+      .post input[type="checkbox"] {
+        margin: 8px 0;
+      }
+      .post label {
+        cursor: pointer;
+      }
+      .post-image {
+        max-width: 100%;
+        border-radius: 4px;
+      }
+      .post-timestamp {
+        font-size: 0.8em;
+        color: #666;
+        margin-top: 4px;
+      }
+
+      .submit-button {
+        display: block;
+        margin: 0 auto;
+        padding: 10px 20px;
+        background-color: #283e51;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .submit-button:hover {
+        background-color: #4b79a1;
+      }
+
+      /* フッター */
+      footer {
+        margin-top: auto;
+        background: #283e51;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        font-size: 0.9em;
+      }
+      footer a {
+        color: #fff;
+        text-decoration: underline;
+      }
+      footer a:hover {
+        color: #dcdcdc;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Instagram投稿の選択</h1>
+    </header>
+
+    <nav>
+      <a href="#">トップ</a>
+      <a href="#">投稿一覧</a>
+      <a href="#">設定</a>
+    </nav>
+
+    <main>
+      <!-- 不要になったルート情報は削除し、Instagram投稿の選択部分のみ残す -->
+
+      <!-- ここからInstagramの投稿表示・選択フォーム -->
+      <div class="instagram-selection">
+        <div class="instagram-selection">
+            <form method="POST" action="{% url 'route_view' %}">
+              {% csrf_token %}
+              <h1>写真を選んでください</h1>
+      
+              {% if posts %}
+                {% for hashtag, post_list in posts.items %}
+                  <div class="hashtag">#{{ hashtag }}</div>
+                  {% if post_list %}
+                    <div class="hashtag-posts">
+                      {% for post in post_list %}
+                        <div class="post">
+                          <input
+                            type="checkbox"
+                            id="post_{{ post.id }}"
+                            name="selected_posts"
+                            value="{{ post.number }}"
+                          />
+                          <label for="post_{{ post.id }}">
+                            <img
+                              src="{{ post.media_url }}"
+                              class="post-image"
+                              alt="Instagram Post"
+                            />
+                            <p class="post-timestamp">{{ post.timestamp }}</p>
+                          </label>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <p>このハッシュタグには投稿がありません。</p>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                <p>表示する投稿がありません。</p>
+              {% endif %}
+      
+              <button type="submit" class="submit-button">選択した投稿を送信</button>
+            </form>
+          </div>
+      <!-- ここまでInstagramの投稿表示・選択フォーム -->
+    </main>
+
+    <footer>
+      <p>連絡先情報: info@example.com</p>
+      <p>
+        ソーシャルメディアリンク:
+        <a href="#">Twitter</a>,
+        <a href="#">Facebook</a>
+      </p>
+    </footer>
+  </body>
+</html>

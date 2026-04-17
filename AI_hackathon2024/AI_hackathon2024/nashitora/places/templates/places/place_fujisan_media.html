@@ -1,0 +1,25 @@
+<!-- places/templates/places/fujisan_media.html -->
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>富士山のInstagramメディア</title>
+  </head>
+  <body>
+    <h1>#{{ hashtag }} の投稿</h1>
+    <div>
+      {% for item in media %}
+      <div>
+        <a href="{{ item.permalink }}" target="_blank">
+          <img
+            src="{{ item.media_url }}"
+            alt="{{ item.caption }}"
+            width="300"
+          />
+        </a>
+        <p>{{ item.caption }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </body>
+</html>

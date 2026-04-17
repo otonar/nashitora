@@ -1,0 +1,17 @@
+<!-- places/place_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ place.name }}</title>
+  </head>
+  <body>
+    <h1>{{ place.name }}</h1>
+    <p><strong>住所:</strong> {{ place.address }}</p>
+    <p><strong>説明:</strong> {{ place.description }}</p>
+    <p><strong>営業時間:</strong> {{ place.opening_hours }}</p>
+    <p><strong>アクセス:</strong> {{ place.access }}</p>
+
+    <p><a href="{% url 'place_list' %}">一覧に戻る</a></p>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Selected Locations</title>
+  </head>
+  <body>
+    <h1>選択した観光地番号</h1>
+    <ul>
+      {% for number in numbers %}
+      <li>観光地番号: {{ number }}</li>
+      <li>posts: {{ selected_posts }}</li>
+      {% endfor %}
+    </ul>
+    {% if hashtags %}
+    <ul>
+      {% for hashtag in hashtags %}
+      <li>
+        <strong>Number:</strong> {{ hashtag.number }}<br />
+        <strong>Category:</strong> {{ hashtag.category }}<br />
+        <strong>Spot:</strong> {{ hashtag.spot }}<br />
+        <strong>Address:</strong> {{ hashtag.address }}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>選択された投稿がありません。</p>
+    {% endif %}
+  </body>
+</html>

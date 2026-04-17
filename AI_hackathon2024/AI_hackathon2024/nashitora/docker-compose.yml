@@ -1,0 +1,15 @@
+# version: '3.9'
+services:
+  web:
+    build: .
+    # buildは同じディレクトリ内のDockerfileを使ってイメージを構築
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    # カレントディレクトリ(ホスト)をコンテナ内の/appにマウント
+    # これによりmanage.pyやnashitoraディレクトリ内のファイル変更が即反映
+    # ただし、requirementsを追加した場合は再度ビルドが必要
+
+    # Djangoはファイル変更検知して再起動するため、開発中はこれで十分

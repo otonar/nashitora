@@ -1,0 +1,9 @@
+travel_project/
+    manage.py
+    travel_project/
+        settings.py
+        urls.py
+    travel_app/
+        static/
+            travel_app/
+                images/

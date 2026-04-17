@@ -12,6 +12,10 @@ __pycache__/
 # Gradioログ
 .gradio/
 
+# 仮想環境
+venv/
+
 # OS
 .DS_Store
 Thumbs.db
+__MACOSX/
